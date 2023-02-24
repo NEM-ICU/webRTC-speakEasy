@@ -2,6 +2,7 @@ import * as store from "./store.js";
 import * as wss from "./wss.js";
 import * as webRTCHandler from "./webRTCHandler.js";
 import * as constants from "./constants.js";
+import * as elements from "./elements.js";
 
 // Socket.io Connection
 
