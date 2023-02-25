@@ -38,6 +38,19 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("pre-offer-answer", (data) => {
+        console.log("pre offer answer came");
+        console.log(data);
+
+        const connectedPeer = connectedPeers.find((peerSocketId) => {
+            return peerSocketId === data.callerSocketId;
+        });
+
+        if (connectedPeer) {
+            io.to(data.callerSocketId).emit("pre-offer-answer", data);
+        }
+    });
+
     socket.on("disconnect", () => {
         console.log("user disconnected");
 
