@@ -62,18 +62,22 @@ export const handlePreOfferAnswer = (data) => {
 
     if (preOfferAnswer === constant.preOfferAnswer.CALLEE_NOT_FOUND) {
         // show dialog that callee has not been found
+        ui.showInfoDialog(preOfferAnswer);
     }
 
     if (preOfferAnswer === constant.preOfferAnswer.CALL_UNAVAILABLE) {
         // show dialog that callee is not able to connect
+        ui.showInfoDialog(preOfferAnswer);
     }
 
     if (preOfferAnswer === constant.preOfferAnswer.CALL_REJECTED) {
         // show dialog that call is rejected by the callee
+        ui.showInfoDialog(preOfferAnswer);
     }
 
     if (preOfferAnswer === constant.preOfferAnswer.CALL_ACCEPTED) {
         // send webRTC offer
+        ui.showCallElements(connectedUserDetails.callType);
     }
 };
 
@@ -82,6 +86,7 @@ export const handlePreOfferAnswer = (data) => {
 const acceptCallHandler = () => {
     console.log("call accept");
     sendPreOfferAnswer(constant.preOfferAnswer.CALL_ACCEPTED);
+    ui.showCallElements(connectedUserDetails.callType);
 };
 const rejectCallHandler = () => {
     console.log("call reject");
