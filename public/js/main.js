@@ -9,6 +9,9 @@ import * as elements from "./elements.js";
 const socket = io("/");
 wss.registerSocketEvents(socket);
 
+// trigger get_local_preview
+webRTCHandler.getLocalPreview();
+
 // register event for personal code copy button
 
 const personalCodeCopyButton = document.getElementById(

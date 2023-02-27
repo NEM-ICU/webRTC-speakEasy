@@ -1,8 +1,80 @@
 import * as wss from "./wss.js";
 import * as constant from "./constants.js";
 import * as ui from "./ui.js";
+import * as store from "./store.js";
 
+// connected user details
 let connectedUserDetails;
+
+// peer connection
+let peerConnection;
+
+// getting access to the camera
+const defaultConstraints = {
+    audio: true,
+    video: true,
+};
+
+// stun servers (webrtc configuration)
+const configuration = {
+    iceServers: [
+        {
+            urls: "stun:stun.1.google.com:13902",
+        },
+    ],
+};
+
+export const getLocalPreview = () => {
+    navigator.mediaDevices
+        .getUserMedia(defaultConstraints)
+        .then((stream) => {
+            ui.updateLocalVideo(stream);
+            store.setLocalStream(stream);
+        })
+        .catch((err) => {
+            console.log("error occured when trying to get an access to camera");
+            console.log(err);
+        });
+};
+
+// establish peer connection
+const createPeerConnetion = () => {
+    peerConnection = new RTCPeerConnection(configuration);
+
+    peerConnection.onicecandidate = (event) => {
+        console.log("getting ice candidate from stun server");
+
+        if (event.candidate) {
+            // send our ice candidates to other peer
+        }
+    };
+
+    peerConnection.onconnectionstatechange = (event) => {
+        if (peerConnection.connectionState === "connected") {
+            console.log("succesfully connected with other peer");
+        }
+    };
+
+    // receiving track from other peer
+    const remoteStream = new MediaStream();
+    store.setRemoteStream(remoteStream);
+    ui.updateRemoteVideo(remoteStream);
+
+    peerConnection.ontrack = (event) => {
+        remoteStream.addTrack(event.track);
+    };
+
+    // add our stream to peer connection
+    if (
+        connectedUserDetails.callType === constant.callType.VIDEO_PERSONAL_CODE
+    ) {
+        const localStream = store.getState().localStream;
+
+        for (const track of localStream.getTracks()) {
+            peerConnection.addTrack(track, localStream);
+        }
+    }
+};
 
 export const sendPreOffer = (callType, calleePersonalCode) => {
     connectedUserDetails = {
@@ -76,15 +148,33 @@ export const handlePreOfferAnswer = (data) => {
     }
 
     if (preOfferAnswer === constant.preOfferAnswer.CALL_ACCEPTED) {
-        // send webRTC offer
         ui.showCallElements(connectedUserDetails.callType);
+        createPeerConnetion();
+        // send webRTC offer
+        sendWebRTCOffer();
     }
+};
+
+const sendWebRTCOffer = async () => {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    wss.sendDataUsingWebRTCSignaling({
+        connectedUserSocketId: connectedUserDetails.socketId,
+        type: constant.webRTCSignaling.OFFER,
+        offer: offer,
+    });
+};
+
+export const handleWebRTCOffer = async (data) => {
+    console.log("webRTC offer came");
+    console.log(data);
 };
 
 // Event Listners
 
 const acceptCallHandler = () => {
     console.log("call accept");
+    createPeerConnetion();
     sendPreOfferAnswer(constant.preOfferAnswer.CALL_ACCEPTED);
     ui.showCallElements(connectedUserDetails.callType);
 };
