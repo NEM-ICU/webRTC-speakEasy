@@ -15,7 +15,7 @@ export const updateLocalVideo = (stream) => {
     localVideo.srcObject = stream;
 
     localVideo.addEventListener("loadedmetadata", () => {
-        localVideo.onplay();
+        localVideo.play();
     });
 };
 
