@@ -46,6 +46,11 @@ const createPeerConnetion = () => {
 
         if (event.candidate) {
             // send our ice candidates to other peer
+            wss.sendDataUsingWebRTCSignaling({
+                connectedUserSocketId: connectedUserDetails.socketId,
+                typeof: constant.webRTCSignaling.ICE_CANDIDATE,
+                candidate: event.candidate,
+            });
         }
     };
 
@@ -166,8 +171,30 @@ const sendWebRTCOffer = async () => {
 };
 
 export const handleWebRTCOffer = async (data) => {
-    console.log("webRTC offer came");
-    console.log(data);
+    await peerConnection.setRemoteDescription(data.offer);
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    wss.sendDataUsingWebRTCSignaling({
+        connectedUserSocketId: connectedUserDetails.socketId,
+        type: constant.webRTCSignaling.ANSWER,
+        answer: answer,
+    });
+};
+
+export const handleWebRTCAnswer = async (data) => {
+    console.log("handling webRTC Answer");
+    await peerConnection.setRemoteDescription(data.answer);
+};
+
+export const handleWebRTCCandidate = async (data) => {
+    try {
+        await peerConnection.addIceCandidate(data.candidate);
+    } catch (err) {
+        console.log(
+            "error occured when trying to add recieved ice candidate",
+            err
+        );
+    }
 };
 
 // Event Listners
