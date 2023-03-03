@@ -135,7 +135,6 @@ const showVideoCallElements = () => {
 // UI helper functions
 
 const enableDashboard = () => {
-    console.log("dashboard blocker enable run");
     const dashboardBlocker = document.getElementById("dashboard_blur");
     if (!dashboardBlocker.classList.contains("display_none")) {
         dashboardBlocker.classList.add("display_none");
