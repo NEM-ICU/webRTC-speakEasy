@@ -19,7 +19,7 @@ const defaultConstraints = {
 const configuration = {
     iceServers: [
         {
-            urls: "stun:stun.1.google.com:13902",
+            urls: "stun:stun4.l.google.com:19302",
         },
     ],
 };
@@ -38,17 +38,16 @@ export const getLocalPreview = () => {
 };
 
 // establish peer connection
-const createPeerConnetion = () => {
+const createPeerConnection = () => {
     peerConnection = new RTCPeerConnection(configuration);
 
     peerConnection.onicecandidate = (event) => {
-        console.log("getting ice candidate from stun server");
-
+        console.log("getting ice candidates from stun server");
         if (event.candidate) {
             // send our ice candidates to other peer
             wss.sendDataUsingWebRTCSignaling({
                 connectedUserSocketId: connectedUserDetails.socketId,
-                typeof: constant.webRTCSignaling.ICE_CANDIDATE,
+                type: constant.webRTCSignaling.ICE_CANDIDATE,
                 candidate: event.candidate,
             });
         }
@@ -60,7 +59,7 @@ const createPeerConnetion = () => {
         }
     };
 
-    // receiving track from other peer
+    // receiving tracks
     const remoteStream = new MediaStream();
     store.setRemoteStream(remoteStream);
     ui.updateRemoteVideo(remoteStream);
@@ -70,6 +69,7 @@ const createPeerConnetion = () => {
     };
 
     // add our stream to peer connection
+
     if (
         connectedUserDetails.callType === constant.callType.VIDEO_PERSONAL_CODE
     ) {
@@ -80,7 +80,6 @@ const createPeerConnetion = () => {
         }
     }
 };
-
 export const sendPreOffer = (callType, calleePersonalCode) => {
     connectedUserDetails = {
         callType,
@@ -154,7 +153,7 @@ export const handlePreOfferAnswer = (data) => {
 
     if (preOfferAnswer === constant.preOfferAnswer.CALL_ACCEPTED) {
         ui.showCallElements(connectedUserDetails.callType);
-        createPeerConnetion();
+        createPeerConnection();
         // send webRTC offer
         sendWebRTCOffer();
     }
@@ -201,7 +200,7 @@ export const handleWebRTCCandidate = async (data) => {
 
 const acceptCallHandler = () => {
     console.log("call accept");
-    createPeerConnetion();
+    createPeerConnection();
     sendPreOfferAnswer(constant.preOfferAnswer.CALL_ACCEPTED);
     ui.showCallElements(connectedUserDetails.callType);
 };

@@ -1,10 +1,10 @@
 let state = {
     socketId: null,
-    localStream: null, //caller camera or audio
-    remoteStream: null, //callee's audio and video
-    screenSharingStream: null,
-    allowConnectionFromStrangers: false,
+    localStream: null,
+    remoteStream: null,
     screenSharingActive: false,
+    screenSharingStream: null,
+    allowConnectionsFromStrangers: false,
 };
 
 export const setSocketId = (socketId) => {
@@ -12,27 +12,13 @@ export const setSocketId = (socketId) => {
         ...state,
         socketId,
     };
-    console.log("socket.id setted", state);
+    console.log(state);
 };
 
 export const setLocalStream = (stream) => {
     state = {
         ...state,
         localStream: stream,
-    };
-};
-
-export const setRemoteStream = (stream) => {
-    state = {
-        ...state,
-        remoteStream: stream,
-    };
-};
-
-export const setScreenSharingStream = (stream) => {
-    state = {
-        ...state,
-        screenSharingStream: stream,
     };
 };
 
@@ -47,6 +33,20 @@ export const setScreenSharingActive = (screenSharingActive) => {
     state = {
         ...state,
         screenSharingActive,
+    };
+};
+
+export const setScreenSharingStream = (stream) => {
+    state = {
+        ...state,
+        screenSharingStream: stream,
+    };
+};
+
+export const setRemoteStream = (stream) => {
+    state = {
+        ...state,
+        remoteStream: stream,
     };
 };
 
