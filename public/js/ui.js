@@ -150,6 +150,21 @@ export const updateCameraButton = (cameraActive) => {
     cameraButtonImage.src = cameraActive ? cameraOffImgSrc : cameraOnImgSrc;
 };
 
+// UI messages
+export const appendMessages = (message, left = false) => {
+    const messageContainer = document.getElementById("messages_container");
+    console.log(left);
+    const messageElement = left
+        ? elements.getLeftMessage(message)
+        : elements.getRightMessage(message);
+    messageContainer.appendChild(messageElement);
+};
+
+export const clearMessenger = () => {
+    const messageContainer = document.getElementById("message_container");
+    messageContainer.querySelectorAll("*").forEach((n) => n.remove());
+};
+
 // UI helper functions
 
 const enableDashboard = () => {

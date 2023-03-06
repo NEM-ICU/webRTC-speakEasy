@@ -120,3 +120,27 @@ export const getInfoDialog = (dialogTitle, dialogDescription) => {
     dialogContent.appendChild(description);
     return dialog;
 };
+
+export const getLeftMessage = (message) => {
+    console.log("run left");
+    const messageContainer = document.createElement("div");
+    messageContainer.classList.add("message_left_container");
+    const messageParagraph = document.createElement("p");
+    messageParagraph.classList.add("message_left_paragraph");
+    messageParagraph.innerHTML = message;
+    messageContainer.appendChild(messageParagraph);
+
+    return messageContainer;
+};
+
+export const getRightMessage = (message) => {
+    console.log("run right");
+    const messageContainer = document.createElement("div");
+    messageContainer.classList.add("message_right_container");
+    const messageParagraph = document.createElement("p");
+    messageParagraph.classList.add("message_right_paragraph");
+    messageParagraph.innerHTML = message;
+    messageContainer.appendChild(messageParagraph);
+
+    return messageContainer;
+};
