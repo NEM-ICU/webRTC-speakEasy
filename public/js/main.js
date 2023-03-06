@@ -85,3 +85,25 @@ switchForScreenSharingingButton.addEventListener("click", () => {
     const screenSharingActive = store.getState().screenSharingActive;
     webRTCHandler.switchBetweenCameraAndScreenSharing(screenSharingActive);
 });
+
+// messenger
+
+const newMessageInput = document.getElementById("new_message_input");
+newMessageInput.addEventListener("keydown", (event) => {
+    const key = event.key;
+
+    if (key === "Enter") {
+        webRTCHandler.sendMessageUsingDataChannel(event.target.value);
+        ui.appendMessages(event.target.value);
+        newMessageInput.value = "";
+    }
+});
+
+const sendMessageButton = document.getElementById("send_message_button");
+sendMessageButton.addEventListener("click", (event) => {
+    const message = newMessageInput.value;
+    webRTCHandler.sendMessageUsingDataChannel(message);
+    ui.appendMessages(message);
+
+    newMessageInput.value = "";
+});

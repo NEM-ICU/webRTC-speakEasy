@@ -9,6 +9,9 @@ let connectedUserDetails;
 // peer connection
 let peerConnection;
 
+// data channel
+let dataChannel;
+
 // getting access to the camera
 const defaultConstraints = {
     audio: true,
@@ -40,6 +43,23 @@ export const getLocalPreview = () => {
 // establish peer connection
 const createPeerConnection = () => {
     peerConnection = new RTCPeerConnection(configuration);
+
+    dataChannel = peerConnection.createDataChannel("chat");
+
+    peerConnection.ondatachannel = (event) => {
+        const dataChannel = event.channel;
+
+        dataChannel.onopen = () => {
+            console.log(
+                "peer connection is ready to recieve data channel messages"
+            );
+        };
+
+        dataChannel.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            ui.appendMessages(message, true);
+        };
+    };
 
     peerConnection.onicecandidate = (event) => {
         console.log("getting ice candidates from stun server");
@@ -80,6 +100,12 @@ const createPeerConnection = () => {
         }
     }
 };
+
+export const sendMessageUsingDataChannel = (message) => {
+    const stringifiedMessage = JSON.stringify(message);
+    dataChannel.send(stringifiedMessage);
+};
+
 export const sendPreOffer = (callType, calleePersonalCode) => {
     connectedUserDetails = {
         callType,
